@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mario Jump</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <script src="./js/script.js" defer></script>
+</head>
+<body>
+  <main class="game-board" role="region" aria-label="Área do jogo">
+    <div class="score-container">
+      <span class="label">Pontos:</span>
+      <span id="score">0</span>
+    </div>
+
+    <button class="play-audio" onclick="playSound()" aria-label="Tocar música">🎵</button>
+
+    <img src="./images/clouds.png" alt="Nuvens decorativas" class="clouds" />
+    <img src="./images/mario.gif" alt="Personagem Mario" class="mario" />
+    <img src="./images/pipe.png" alt="Cano do Mario" class="pipe" />
+    <img src="./images/game-over.png" alt="Game Over" class="game-over" hidden />
+
+    <button class="mobile-jump" id="jump-button" aria-label="Pular">Pular</button>
+  </main>
+
+  <audio id="sound-effect" src="./audio/Its-me-marioo.mp3" preload="auto"></audio>
+  <audio id="jump-audio" src="./audio/jump.wav.mp3" preload="auto"></audio>
+  <audio id="gameover-audio" src="./audio/game-over.mp3" preload="auto"></audio>
+</body>
+</html>
