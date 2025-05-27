@@ -8,7 +8,26 @@
   <script src="./js/script.js" defer></script>
 </head>
 <body>
-  <main class="game-board" role="region" aria-label="Área do jogo">
+  <!-- Tela de seleção de personagem -->
+  <div class="character-selection" id="character-selection">
+    <h2>Escolha seu personagem</h2>
+    <div class="characters">
+      <img src="./images/mario.gif" alt="Mario" onclick="selectCharacter('mario.gif')">
+      <img src="./images/gatim.gif" alt="Gatim" onclick="selectCharacter('gatim.gif')">
+      <img src="./images/pikachu.gif" alt="Pikachu" onclick="selectCharacter('pikachu.gif')">
+      <img src="./images/goku.gif" alt="Goku" onclick="selectCharacter('goku.gif')">
+      <img src="./images/tubarao.gif" alt="Tubarao" onclick="selectCharacter('tubarao.gif')">
+      <img src="./images/sla.gif" alt="Sla" onclick="selectCharacter('sla.gif')">
+      <img src="./images/Passinho.gif" alt="Passinho" onclick="selectCharacter('Passinho.gif')">
+      <img src="./images/sonic.gif" alt="Sonic" onclick="selectCharacter('sonic.gif')">
+      <img src="./images/ave.gif" alt="Ave" onclick="selectCharacter('ave.gif')">
+      <img src="./images/simpsom.gif" alt="Simpsom" onclick="selectCharacter('simpsom.gif')">
+      <img src="./images/flash.webp" alt="Flash" onclick="selectCharacter('flash.webp')">
+    </div>
+  </div>
+
+  <!-- Tela do jogo -->
+  <main class="game-board" id="game-board" hidden role="region" aria-label="Área do jogo">
     <div class="score-container">
       <span class="label">Pontos:</span>
       <span id="score">0</span>
@@ -17,7 +36,7 @@
     <button class="play-audio" onclick="playSound()" aria-label="Tocar música">🎵</button>
 
     <img src="./images/clouds.png" alt="Nuvens decorativas" class="clouds" />
-    <img src="./images/mario.gif" alt="Personagem Mario" class="mario" />
+    <img src="" alt="Personagem" class="mario" />
     <img src="./images/pipe.png" alt="Cano do Mario" class="pipe" />
     <img src="./images/game-over.png" alt="Game Over" class="game-over" hidden />
 
