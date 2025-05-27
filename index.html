@@ -8,7 +8,8 @@
   <script src="./js/script.js" defer></script>
 </head>
 <body>
-  <!-- Tela de seleção de personagem -->
+
+  <!-- Seleção de personagem -->
   <div class="character-selection" id="character-selection">
     <h2>Escolha seu personagem</h2>
     <div class="characters">
@@ -22,13 +23,14 @@
       <img src="./images/sonic.gif" alt="Sonic" onclick="selectCharacter('sonic.gif')">
       <img src="./images/ave.gif" alt="Ave" onclick="selectCharacter('ave.gif')">
       <img src="./images/simpsom.gif" alt="Simpsom" onclick="selectCharacter('simpsom.gif')">
-      <img src="./images/flash.webp" alt="Flash" onclick="selectCharacter('flash.webp')">
+      <img src="./images/gato.gif" alt="Gato" onclick="selectCharacter('gato.gif')">
     </div>
   </div>
 
-  <!-- Tela do jogo -->
+  <!-- Área do jogo -->
   <main class="game-board" id="game-board" hidden role="region" aria-label="Área do jogo">
     <div class="score-container">
+      <img id="score-icon" src="" alt="Ícone do personagem" style="width: 30px; margin-right: 8px;" />
       <span class="label">Pontos:</span>
       <span id="score">0</span>
     </div>
@@ -36,15 +38,18 @@
     <button class="play-audio" onclick="playSound()" aria-label="Tocar música">🎵</button>
 
     <img src="./images/clouds.png" alt="Nuvens decorativas" class="clouds" />
-    <img src="" alt="Personagem" class="mario" />
+    <img src="" alt="Personagem selecionado" class="mario" />
     <img src="./images/pipe.png" alt="Cano do Mario" class="pipe" />
     <img src="./images/game-over.png" alt="Game Over" class="game-over" hidden />
 
     <button class="mobile-jump" id="jump-button" aria-label="Pular">Pular</button>
+    <button id="restart-button" hidden class="restart-btn">Jogar novamente</button>
   </main>
 
+  <!-- Áudios -->
   <audio id="sound-effect" src="./audio/Its-me-marioo.mp3" preload="auto"></audio>
   <audio id="jump-audio" src="./audio/jump.wav.mp3" preload="auto"></audio>
   <audio id="gameover-audio" src="./audio/game-over.mp3" preload="auto"></audio>
+
 </body>
 </html>

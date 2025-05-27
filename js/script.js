@@ -3,6 +3,7 @@ const pipe = document.querySelector('.pipe');
 const scoreSpan = document.getElementById('score');
 const gameOverImg = document.querySelector('.game-over');
 const jumpButton = document.getElementById('jump-button');
+const restartButton = document.getElementById('restart-button');
 
 const jumpAudio = document.getElementById('jump-audio');
 const gameOverAudio = document.getElementById('gameover-audio');
@@ -10,30 +11,49 @@ const musicAudio = document.getElementById('sound-effect');
 
 let score = 0;
 let isGameOver = false;
-let pipeSpeed = 1.5; // segundos iniciais
+let pipeSpeed = 1.5;
 
-// Seleção de personagem
-function selectCharacter(fileName) {
+// Lista de personagens e índice
+const characters = ['mario.gif', 'luigi.gif', 'yoshi.gif'];
+let currentCharacterIndex = 0;
+
+// Aplica personagem (imagem principal + ícone da pontuação)
+function applyCharacter(fileName) {
+  const imagePath = './images/' + fileName;
+
+  // Atualiza personagem principal (só se existir)
+  const marioEl = document.querySelector('.mario');
+  if (marioEl) marioEl.src = imagePath;
+
+  // Atualiza ícone da pontuação
+  const scoreIcon = document.getElementById('score-icon');
+  if (scoreIcon) scoreIcon.src = imagePath;
+
   localStorage.setItem('selectedCharacter', fileName);
-  document.getElementById('character-selection').style.display = 'none';
-  document.getElementById('game-board').hidden = false;
-
-  mario.src = './images/' + fileName;
 }
 
-// Aplica a velocidade ao cano
+
+// Seleciona ao clicar na tela inicial
+function selectCharacter(fileName) {
+  currentCharacterIndex = characters.indexOf(fileName);
+  applyCharacter(fileName);
+  document.getElementById('character-selection').style.display = 'none';
+  document.getElementById('game-board').hidden = false;
+}
+
+// Troca personagem com tecla C
+function changeCharacter() {
+  currentCharacterIndex = (currentCharacterIndex + 1) % characters.length;
+  const nextCharacter = characters[currentCharacterIndex];
+  applyCharacter(nextCharacter);
+}
+
+// Atualiza velocidade
 function updatePipeSpeed() {
   pipe.style.animation = `pipe-animation ${pipeSpeed}s infinite linear`;
 }
 
-// Reinicia o jogo após Game Over
-function restartGame() {
-  setTimeout(() => {
-    window.location.reload();
-  }, 2000);
-}
-
-// Ação de pulo
+// Pulo
 function jump() {
   if (isGameOver) return;
 
@@ -46,19 +66,25 @@ function jump() {
   }, 500);
 }
 
-// Botão de som 🎵
+// Som botão 🎵
 function playSound() {
   musicAudio.currentTime = 0;
   musicAudio.play().catch(() => {});
 }
 
-// Carrega personagem salvo
+// Aplica personagem salvo ao iniciar
 window.addEventListener('DOMContentLoaded', () => {
   const selected = localStorage.getItem('selectedCharacter');
-  if (selected && mario) {
-    mario.src = './images/' + selected;
-  }
+  const firstCharacter = selected || characters[0];
+  currentCharacterIndex = characters.indexOf(firstCharacter);
+  if (currentCharacterIndex === -1) currentCharacterIndex = 0;
+
+  // Aguarda levemente a renderização para aplicar o personagem
+  setTimeout(() => {
+    applyCharacter(characters[currentCharacterIndex]);
+  }, 100);
 });
+
 
 updatePipeSpeed();
 
@@ -67,7 +93,6 @@ const loop = setInterval(() => {
   const marioPosition = +window.getComputedStyle(mario).bottom.replace('px', '');
 
   if (pipePosition <= 120 && pipePosition > 0 && marioPosition < 80 && !isGameOver) {
-    // Colisão
     pipe.style.animation = 'none';
     pipe.style.left = `${pipePosition}px`;
 
@@ -84,22 +109,42 @@ const loop = setInterval(() => {
 
     clearInterval(loop);
     isGameOver = true;
-    restartGame();
+    restartButton.hidden = false;
   }
 
   if (!isGameOver) {
     score++;
     scoreSpan.textContent = score;
 
-    if (score % 500 === 0 && pipeSpeed > 0.6) {
-      pipeSpeed -= 0.1;
-      updatePipeSpeed();
+    if (score % 500 === 0) {
+      if (pipeSpeed > 0.6) {
+        pipeSpeed -= 0.1;
+        updatePipeSpeed();
+      }
+
+      const board = document.querySelector('.game-board');
+      board.classList.remove('sky-evening', 'sky-night');
+
+      const cycle = (score / 500) % 3;
+      if (cycle === 1) {
+        board.classList.add('sky-evening');
+      } else if (cycle === 2) {
+        board.classList.add('sky-night');
+      }
     }
   }
 }, 100);
 
+// Teclado
 document.addEventListener('keydown', (event) => {
   if (event.code === 'Space') jump();
+  if (event.code === 'KeyC') changeCharacter();
 });
 
+// Celular
 jumpButton.addEventListener('touchstart', jump);
+
+// Reinício
+restartButton.addEventListener('click', () => {
+  window.location.reload();
+});
