@@ -129,21 +129,22 @@ body {
 
 /* Botão de pulo no mobile */
 .mobile-jump {
-  display: none;
+  display: block; /* agora sempre visível */
   position: absolute;
   bottom: 5vh;
   left: 50%;
   transform: translateX(-50%);
   padding: 2vh 5vw;
-  font-size: 5vw;
+  font-size: 20px;
   border: none;
   border-radius: 10px;
   background-color: #f44336;
   color: white;
   cursor: pointer;
-  z-index: 20;
+  z-index: 999;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
+
 
 /* Ativa em dispositivos menores */
 @media (max-width: 768px) {
@@ -151,7 +152,6 @@ body {
     display: block;
   }
 }
-
 
 /* Botão de reinício */
 .restart-btn {

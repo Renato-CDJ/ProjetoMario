@@ -143,7 +143,7 @@ document.addEventListener('keydown', (event) => {
 
 // Celular
 jumpButton.addEventListener('touchstart', jump);
-
+jumpButton.addEventListener('click', jump);
 // Reinício
 restartButton.addEventListener('click', () => {
   window.location.reload();
