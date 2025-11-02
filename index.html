@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mario Jump</title>
+  <title>Mario Jump - Jogo Interativo</title>
+  <meta name="description" content="Jogo do Mario Jump com múltiplos personagens" />
   <link rel="stylesheet" href="./css/style.css" />
   <script src="./js/script.js" defer></script>
 </head>
@@ -12,43 +13,46 @@
   <!-- Seleção de personagem -->
   <div class="character-selection" id="character-selection">
     <h2>Escolha seu personagem</h2>
+    <p style="color: #666; margin-top: 10px;">Pressione C durante o jogo para trocar</p>
     <div class="characters">
-      <img src="./images/mario.gif" alt="Mario" onclick="selectCharacter('mario.gif')">
-      <img src="./images/gatim.gif" alt="Gatim" onclick="selectCharacter('gatim.gif')">
-      <img src="./images/pikachu.gif" alt="Pikachu" onclick="selectCharacter('pikachu.gif')">
-      <img src="./images/goku.gif" alt="Goku" onclick="selectCharacter('goku.gif')">
-      <img src="./images/tubarao.gif" alt="Tubarao" onclick="selectCharacter('tubarao.gif')">
-      <img src="./images/sla.gif" alt="Sla" onclick="selectCharacter('sla.gif')">
-      <img src="./images/Passinho.gif" alt="Passinho" onclick="selectCharacter('Passinho.gif')">
-      <img src="./images/sonic.gif" alt="Sonic" onclick="selectCharacter('sonic.gif')">
-      <img src="./images/ave.gif" alt="Ave" onclick="selectCharacter('ave.gif')">
-      <img src="./images/simpsom.gif" alt="Simpsom" onclick="selectCharacter('simpsom.gif')">
-      <img src="./images/gato.gif" alt="Gato" onclick="selectCharacter('gato.gif')">
+      <img src="./images/mario.gif" alt="Mario" onclick="selectCharacter('mario.gif')" loading="lazy">
+      <img src="./images/gatim.gif" alt="Gatim" onclick="selectCharacter('gatim.gif')" loading="lazy">
+      <img src="./images/pikachu.gif" alt="Pikachu" onclick="selectCharacter('pikachu.gif')" loading="lazy">
+      <img src="./images/goku.gif" alt="Goku" onclick="selectCharacter('goku.gif')" loading="lazy">
+      <img src="./images/tubarao.gif" alt="Tubarao" onclick="selectCharacter('tubarao.gif')" loading="lazy">
+      <img src="./images/sla.gif" alt="Sla" onclick="selectCharacter('sla.gif')" loading="lazy">
+      <img src="./images/Passinho.gif" alt="Passinho" onclick="selectCharacter('Passinho.gif')" loading="lazy">
     </div>
   </div>
 
   <!-- Área do jogo -->
   <main class="game-board" id="game-board" hidden role="region" aria-label="Área do jogo">
     <div class="score-container">
-      <img id="score-icon" src="" alt="Ícone do personagem" style="width: 30px; margin-right: 8px;" />
+      <img id="score-icon" src="/placeholder.svg" alt="Ícone do personagem" style="width: 30px; margin-right: 8px;" />
       <span class="label">Pontos:</span>
       <span id="score">0</span>
     </div>
 
-    <button class="play-audio" onclick="playSound()" aria-label="Tocar música">🎵</button>
+    <!-- Added high score display -->
+    <div class="high-score-container">
+      <span class="label">Recorde:</span>
+      <span id="high-score">0</span>
+    </div>
 
-    <img src="./images/clouds.png" alt="Nuvens decorativas" class="clouds" />
-    <img src="" alt="Personagem selecionado" class="mario" />
-    <img src="./images/pipe.png" alt="Cano do Mario" class="pipe" />
+    <button class="play-audio" onclick="playSound()" aria-label="Tocar/Pausar música" title="Tocar/Pausar música">🎵</button>
+
+    <img src="./images/clouds.png" alt="Nuvens decorativas" class="clouds" loading="lazy" />
+    <img src="/placeholder.svg" alt="Personagem selecionado" class="mario" />
+    <img src="./images/pipe.png" alt="Cano do Mario" class="pipe" loading="lazy" />
     <img src="./images/game-over.png" alt="Game Over" class="game-over" hidden />
   
     <button id="restart-button" hidden class="restart-btn">Jogar novamente</button>
   </main>
 
-  <button class="mobile-jump" id="jump-button" aria-label="Pular">Pular</button>
+  <button class="mobile-jump" id="jump-button" aria-label="Pular" title="Pular">PULAR</button>
 
   <!-- Áudios -->
-  <audio id="sound-effect" src="./audio/Its-me-marioo.mp3" preload="auto"></audio>
+  <audio id="sound-effect" src="./audio/Its-me-marioo.mp3" preload="auto" loop></audio>
   <audio id="jump-audio" src="./audio/jump.wav.mp3" preload="auto"></audio>
   <audio id="gameover-audio" src="./audio/game-over.mp3" preload="auto"></audio>
 

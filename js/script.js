@@ -1,150 +1,248 @@
-const mario = document.querySelector('.mario');
-const pipe = document.querySelector('.pipe');
-const scoreSpan = document.getElementById('score');
-const gameOverImg = document.querySelector('.game-over');
-const jumpButton = document.getElementById('jump-button');
-const restartButton = document.getElementById('restart-button');
+const mario = document.querySelector(".mario")
+const pipe = document.querySelector(".pipe")
+const scoreSpan = document.getElementById("score")
+const gameOverImg = document.querySelector(".game-over")
+const jumpButton = document.getElementById("jump-button")
+const restartButton = document.getElementById("restart-button")
 
-const jumpAudio = document.getElementById('jump-audio');
-const gameOverAudio = document.getElementById('gameover-audio');
-const musicAudio = document.getElementById('sound-effect');
+const jumpAudio = document.getElementById("jump-audio")
+const gameOverAudio = document.getElementById("gameover-audio")
+const musicAudio = document.getElementById("sound-effect")
 
-let score = 0;
-let isGameOver = false;
-let pipeSpeed = 1.5;
+let score = 0
+let isGameOver = false
+let pipeSpeed = 1.5
+let isJumping = false
+let highScore = Number.parseInt(localStorage.getItem("highScore")) || 0
+let animationFrameId = null
 
-// Lista de personagens e índice
-const characters = ['mario.gif', 'luigi.gif', 'yoshi.gif'];
-let currentCharacterIndex = 0;
+const characters = ["mario.gif", "gatim.gif", "pikachu.gif", "goku.gif", "tubarao.gif", "sla.gif", "Passinho.gif"]
+let currentCharacterIndex = 0
 
 // Aplica personagem (imagem principal + ícone da pontuação)
 function applyCharacter(fileName) {
-  const imagePath = './images/' + fileName;
+  const imagePath = "./images/" + fileName
 
   // Atualiza personagem principal (só se existir)
-  const marioEl = document.querySelector('.mario');
-  if (marioEl) marioEl.src = imagePath;
+  const marioEl = document.querySelector(".mario")
+  if (marioEl) marioEl.src = imagePath
 
   // Atualiza ícone da pontuação
-  const scoreIcon = document.getElementById('score-icon');
-  if (scoreIcon) scoreIcon.src = imagePath;
+  const scoreIcon = document.getElementById("score-icon")
+  if (scoreIcon) scoreIcon.src = imagePath
 
-  localStorage.setItem('selectedCharacter', fileName);
+  localStorage.setItem("selectedCharacter", fileName)
 }
-
 
 // Seleciona ao clicar na tela inicial
 function selectCharacter(fileName) {
-  currentCharacterIndex = characters.indexOf(fileName);
-  applyCharacter(fileName);
-  document.getElementById('character-selection').style.display = 'none';
-  document.getElementById('game-board').hidden = false;
+  currentCharacterIndex = characters.indexOf(fileName)
+  if (currentCharacterIndex === -1) currentCharacterIndex = 0
+
+  applyCharacter(fileName)
+  document.getElementById("character-selection").style.display = "none"
+  document.getElementById("game-board").hidden = false
+
+  startGameLoop()
 }
 
 // Troca personagem com tecla C
 function changeCharacter() {
-  currentCharacterIndex = (currentCharacterIndex + 1) % characters.length;
-  const nextCharacter = characters[currentCharacterIndex];
-  applyCharacter(nextCharacter);
+  if (isGameOver) return
+
+  currentCharacterIndex = (currentCharacterIndex + 1) % characters.length
+  const nextCharacter = characters[currentCharacterIndex]
+  applyCharacter(nextCharacter)
 }
 
 // Atualiza velocidade
 function updatePipeSpeed() {
-  pipe.style.animation = `pipe-animation ${pipeSpeed}s infinite linear`;
+  pipe.style.animation = `pipe-animation ${pipeSpeed}s infinite linear`
 }
 
-// Pulo
 function jump() {
-  if (isGameOver) return;
+  if (isGameOver || isJumping) return
 
-  mario.classList.add('jump');
-  jumpAudio.currentTime = 0;
-  jumpAudio.play().catch(() => {});
+  isJumping = true
+  mario.classList.add("jump")
+
+  const jumpSound = jumpAudio.cloneNode()
+  jumpSound.volume = 0.3
+  jumpSound.play().catch(() => {})
 
   setTimeout(() => {
-    mario.classList.remove('jump');
-  }, 500);
+    mario.classList.remove("jump")
+    isJumping = false
+  }, 500)
 }
 
 // Som botão 🎵
 function playSound() {
-  musicAudio.currentTime = 0;
-  musicAudio.play().catch(() => {});
+  if (musicAudio.paused) {
+    musicAudio.currentTime = 0
+    musicAudio.volume = 0.4
+    musicAudio.play().catch(() => {})
+  } else {
+    musicAudio.pause()
+  }
 }
 
-// Aplica personagem salvo ao iniciar
-window.addEventListener('DOMContentLoaded', () => {
-  const selected = localStorage.getItem('selectedCharacter');
-  const firstCharacter = selected || characters[0];
-  currentCharacterIndex = characters.indexOf(firstCharacter);
-  if (currentCharacterIndex === -1) currentCharacterIndex = 0;
+function updateHighScore() {
+  const highScoreEl = document.getElementById("high-score")
+  if (highScoreEl) {
+    highScoreEl.textContent = highScore
+  }
+}
 
-  // Aguarda levemente a renderização para aplicar o personagem
-  setTimeout(() => {
-    applyCharacter(characters[currentCharacterIndex]);
-  }, 100);
-});
+function handleGameOver() {
+  isGameOver = true
 
+  // Stop pipe animation
+  const pipePosition = pipe.offsetLeft
+  pipe.style.animation = "none"
+  pipe.style.left = `${pipePosition}px`
 
-updatePipeSpeed();
+  // Stop mario animation
+  const marioPosition = +window.getComputedStyle(mario).bottom.replace("px", "")
+  mario.style.animation = "none"
+  mario.style.bottom = `${marioPosition}px`
 
-const loop = setInterval(() => {
-  const pipePosition = pipe.offsetLeft;
-  const marioPosition = +window.getComputedStyle(mario).bottom.replace('px', '');
+  mario.style.filter = "grayscale(100%)"
+  mario.style.opacity = "0.7"
 
-  if (pipePosition <= 120 && pipePosition > 0 && marioPosition < 80 && !isGameOver) {
-    pipe.style.animation = 'none';
-    pipe.style.left = `${pipePosition}px`;
+  gameOverImg.hidden = false
+  restartButton.hidden = false
 
-    mario.style.animation = 'none';
-    mario.style.bottom = `${marioPosition}px`;
-    mario.src = './images/game-over.png';
-    mario.style.width = '75px';
-    mario.style.marginLeft = '50px';
-
-    gameOverImg.hidden = false;
-
-    gameOverAudio.currentTime = 0;
-    gameOverAudio.play().catch(() => {});
-
-    clearInterval(loop);
-    isGameOver = true;
-    restartButton.hidden = false;
+  if (score > highScore) {
+    highScore = score
+    localStorage.setItem("highScore", highScore)
+    updateHighScore()
   }
 
-  if (!isGameOver) {
-    score++;
-    scoreSpan.textContent = score;
+  gameOverAudio.volume = 0.5
+  gameOverAudio.currentTime = 0
+  gameOverAudio.play().catch(() => {})
 
-    if (score % 500 === 0) {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId)
+  }
+}
+
+function checkCollision() {
+  const pipePosition = pipe.offsetLeft
+  const marioPosition = +window.getComputedStyle(mario).bottom.replace("px", "")
+
+  const marioWidth = mario.offsetWidth
+  const pipeWidth = pipe.offsetWidth
+  const collisionThreshold = 80
+
+  // Check if pipe is in collision zone
+  if (pipePosition <= 120 && pipePosition > -pipeWidth && marioPosition < collisionThreshold) {
+    return true
+  }
+
+  return false
+}
+
+let lastTime = 0
+let scoreAccumulator = 0
+
+function startGameLoop() {
+  updatePipeSpeed()
+  lastTime = performance.now()
+  gameLoop(lastTime)
+}
+
+function gameLoop(currentTime) {
+  if (isGameOver) return
+
+  const deltaTime = currentTime - lastTime
+  lastTime = currentTime
+
+  scoreAccumulator += deltaTime
+  if (scoreAccumulator >= 100) {
+    score += Math.floor(scoreAccumulator / 100)
+    scoreAccumulator = scoreAccumulator % 100
+    scoreSpan.textContent = score
+
+    if (score % 500 === 0 && score > 0) {
       if (pipeSpeed > 0.6) {
-        pipeSpeed -= 0.1;
-        updatePipeSpeed();
+        pipeSpeed -= 0.1
+        updatePipeSpeed()
       }
 
-      const board = document.querySelector('.game-board');
-      board.classList.remove('sky-evening', 'sky-night');
+      const board = document.querySelector(".game-board")
+      board.classList.remove("sky-evening", "sky-night")
 
-      const cycle = (score / 500) % 3;
+      const cycle = Math.floor(score / 500) % 3
       if (cycle === 1) {
-        board.classList.add('sky-evening');
+        board.classList.add("sky-evening")
       } else if (cycle === 2) {
-        board.classList.add('sky-night');
+        board.classList.add("sky-night")
       }
     }
   }
-}, 100);
 
-// Teclado
-document.addEventListener('keydown', (event) => {
-  if (event.code === 'Space') jump();
-  if (event.code === 'KeyC') changeCharacter();
-});
+  if (checkCollision()) {
+    handleGameOver()
+    return
+  }
 
-// Celular
-jumpButton.addEventListener('touchstart', jump);
-jumpButton.addEventListener('click', jump);
+  animationFrameId = requestAnimationFrame(gameLoop)
+}
+
+// Aplica personagem salvo ao iniciar
+window.addEventListener("DOMContentLoaded", () => {
+  const selected = localStorage.getItem("selectedCharacter")
+  const firstCharacter = selected || characters[0]
+  currentCharacterIndex = characters.indexOf(firstCharacter)
+  if (currentCharacterIndex === -1) currentCharacterIndex = 0
+
+  updateHighScore()
+
+  // Aguarda levemente a renderização para aplicar o personagem
+  setTimeout(() => {
+    applyCharacter(characters[currentCharacterIndex])
+  }, 100)
+})
+
+document.addEventListener("keydown", (event) => {
+  if (event.code === "Space") {
+    event.preventDefault()
+    jump()
+  }
+  if (event.code === "KeyC") {
+    event.preventDefault()
+    changeCharacter()
+  }
+})
+
+jumpButton.addEventListener("touchstart", (e) => {
+  e.preventDefault()
+  jump()
+})
+
+jumpButton.addEventListener("click", (e) => {
+  e.preventDefault()
+  jump()
+})
+
 // Reinício
-restartButton.addEventListener('click', () => {
-  window.location.reload();
-});
+restartButton.addEventListener("click", () => {
+  location.reload()
+})
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (animationFrameId && !isGameOver) {
+      cancelAnimationFrame(animationFrameId)
+      pipe.style.animationPlayState = "paused"
+    }
+  } else {
+    if (!isGameOver && animationFrameId) {
+      pipe.style.animationPlayState = "running"
+      lastTime = performance.now()
+      gameLoop(lastTime)
+    }
+  }
+})
