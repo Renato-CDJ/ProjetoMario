@@ -19,43 +19,105 @@ let animationFrameId = null
 const characters = ["mario.gif", "gatim.gif", "pikachu.gif", "goku.gif", "tubarao.gif", "sla.gif", "Passinho.gif"]
 let currentCharacterIndex = 0
 
-// Aplica personagem (imagem principal + ícone da pontuação)
+function createParticle(x, y, color) {
+  const particle = document.createElement("div")
+  particle.style.position = "absolute"
+  particle.style.left = x + "px"
+  particle.style.bottom = y + "px"
+  particle.style.width = "8px"
+  particle.style.height = "8px"
+  particle.style.borderRadius = "50%"
+  particle.style.backgroundColor = color
+  particle.style.pointerEvents = "none"
+  particle.style.zIndex = "20"
+  particle.style.boxShadow = `0 0 10px ${color}`
+
+  const gameBoard = document.querySelector(".game-board")
+  gameBoard.appendChild(particle)
+
+  const angle = Math.random() * Math.PI * 2
+  const velocity = 2 + Math.random() * 3
+  const vx = Math.cos(angle) * velocity
+  const vy = Math.sin(angle) * velocity + 5
+
+  let posX = x
+  let posY = y
+  let opacity = 1
+
+  function animate() {
+    posX += vx
+    posY += vy
+    opacity -= 0.02
+
+    particle.style.left = posX + "px"
+    particle.style.bottom = posY + "px"
+    particle.style.opacity = opacity
+
+    if (opacity > 0) {
+      requestAnimationFrame(animate)
+    } else {
+      particle.remove()
+    }
+  }
+
+  animate()
+}
+
+function createJumpEffect() {
+  const marioRect = mario.getBoundingClientRect()
+  const gameBoardRect = document.querySelector(".game-board").getBoundingClientRect()
+  const x = marioRect.left - gameBoardRect.left + marioRect.width / 2
+  const y = marioRect.bottom - gameBoardRect.bottom
+
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => {
+      createParticle(x, Math.abs(y), "#ffd700")
+    }, i * 20)
+  }
+}
+
 function applyCharacter(fileName) {
   const imagePath = "./images/" + fileName
 
-  // Atualiza personagem principal (só se existir)
   const marioEl = document.querySelector(".mario")
   if (marioEl) marioEl.src = imagePath
 
-  // Atualiza ícone da pontuação
   const scoreIcon = document.getElementById("score-icon")
   if (scoreIcon) scoreIcon.src = imagePath
 
   localStorage.setItem("selectedCharacter", fileName)
 }
 
-// Seleciona ao clicar na tela inicial
 function selectCharacter(fileName) {
   currentCharacterIndex = characters.indexOf(fileName)
   if (currentCharacterIndex === -1) currentCharacterIndex = 0
 
   applyCharacter(fileName)
-  document.getElementById("character-selection").style.display = "none"
-  document.getElementById("game-board").hidden = false
 
-  startGameLoop()
+  const selection = document.getElementById("character-selection")
+  selection.style.opacity = "0"
+  selection.style.transform = "scale(0.9)"
+
+  setTimeout(() => {
+    selection.style.display = "none"
+    document.getElementById("game-board").hidden = false
+    startGameLoop()
+  }, 300)
 }
 
-// Troca personagem com tecla C
 function changeCharacter() {
   if (isGameOver) return
 
   currentCharacterIndex = (currentCharacterIndex + 1) % characters.length
   const nextCharacter = characters[currentCharacterIndex]
   applyCharacter(nextCharacter)
+
+  mario.style.transform = "scale(1.2)"
+  setTimeout(() => {
+    mario.style.transform = "scale(1)"
+  }, 200)
 }
 
-// Atualiza velocidade
 function updatePipeSpeed() {
   pipe.style.animation = `pipe-animation ${pipeSpeed}s infinite linear`
 }
@@ -65,6 +127,8 @@ function jump() {
 
   isJumping = true
   mario.classList.add("jump")
+
+  createJumpEffect()
 
   const jumpSound = jumpAudio.cloneNode()
   jumpSound.volume = 0.3
@@ -76,14 +140,23 @@ function jump() {
   }, 500)
 }
 
-// Som botão 🎵
 function playSound() {
+  const button = document.querySelector(".play-audio")
+
   if (musicAudio.paused) {
     musicAudio.currentTime = 0
     musicAudio.volume = 0.4
     musicAudio.play().catch(() => {})
+    button.style.transform = "scale(1.1) rotate(15deg)"
+    setTimeout(() => {
+      button.style.transform = "scale(1) rotate(0deg)"
+    }, 200)
   } else {
     musicAudio.pause()
+    button.style.transform = "scale(0.9)"
+    setTimeout(() => {
+      button.style.transform = "scale(1)"
+    }, 200)
   }
 }
 
@@ -91,24 +164,47 @@ function updateHighScore() {
   const highScoreEl = document.getElementById("high-score")
   if (highScoreEl) {
     highScoreEl.textContent = highScore
+
+    if (score > highScore) {
+      highScoreEl.parentElement.style.transform = "scale(1.1)"
+      setTimeout(() => {
+        highScoreEl.parentElement.style.transform = "scale(1)"
+      }, 300)
+    }
+  }
+}
+
+function createCollisionEffect() {
+  const marioRect = mario.getBoundingClientRect()
+  const gameBoardRect = document.querySelector(".game-board").getBoundingClientRect()
+  const x = marioRect.left - gameBoardRect.left + marioRect.width / 2
+  const y = marioRect.bottom - gameBoardRect.bottom
+
+  const colors = ["#ff6b6b", "#feca57", "#48dbfb", "#ff9ff3"]
+
+  for (let i = 0; i < 15; i++) {
+    setTimeout(() => {
+      const color = colors[Math.floor(Math.random() * colors.length)]
+      createParticle(x, Math.abs(y), color)
+    }, i * 30)
   }
 }
 
 function handleGameOver() {
   isGameOver = true
 
-  // Stop pipe animation
   const pipePosition = pipe.offsetLeft
   pipe.style.animation = "none"
   pipe.style.left = `${pipePosition}px`
 
-  // Stop mario animation
   const marioPosition = +window.getComputedStyle(mario).bottom.replace("px", "")
   mario.style.animation = "none"
   mario.style.bottom = `${marioPosition}px`
 
   mario.style.filter = "grayscale(100%)"
   mario.style.opacity = "0.7"
+
+  createCollisionEffect()
 
   gameOverImg.hidden = false
   restartButton.hidden = false
@@ -136,7 +232,6 @@ function checkCollision() {
   const pipeWidth = pipe.offsetWidth
   const collisionThreshold = 80
 
-  // Check if pipe is in collision zone
   if (pipePosition <= 120 && pipePosition > -pipeWidth && marioPosition < collisionThreshold) {
     return true
   }
@@ -161,9 +256,17 @@ function gameLoop(currentTime) {
 
   scoreAccumulator += deltaTime
   if (scoreAccumulator >= 100) {
-    score += Math.floor(scoreAccumulator / 100)
+    const pointsEarned = Math.floor(scoreAccumulator / 100)
+    score += pointsEarned
     scoreAccumulator = scoreAccumulator % 100
     scoreSpan.textContent = score
+
+    if (pointsEarned > 0) {
+      scoreSpan.style.transform = "scale(1.2)"
+      setTimeout(() => {
+        scoreSpan.style.transform = "scale(1)"
+      }, 100)
+    }
 
     if (score % 500 === 0 && score > 0) {
       if (pipeSpeed > 0.6) {
@@ -191,7 +294,6 @@ function gameLoop(currentTime) {
   animationFrameId = requestAnimationFrame(gameLoop)
 }
 
-// Aplica personagem salvo ao iniciar
 window.addEventListener("DOMContentLoaded", () => {
   const selected = localStorage.getItem("selectedCharacter")
   const firstCharacter = selected || characters[0]
@@ -200,7 +302,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   updateHighScore()
 
-  // Aguarda levemente a renderização para aplicar o personagem
   setTimeout(() => {
     applyCharacter(characters[currentCharacterIndex])
   }, 100)
@@ -227,7 +328,6 @@ jumpButton.addEventListener("click", (e) => {
   jump()
 })
 
-// Reinício
 restartButton.addEventListener("click", () => {
   location.reload()
 })

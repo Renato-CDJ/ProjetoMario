@@ -11,7 +11,7 @@
 <body>
 
   <!-- Seleção de personagem -->
-  <div class="character-selection" id="character-selection">
+  <div class="character-selection" id="character-selection" style="transition: all 0.3s ease;">
     <h2>Escolha seu personagem</h2>
     <p style="color: #666; margin-top: 10px;">Pressione C durante o jogo para trocar</p>
     <div class="characters">
@@ -28,25 +28,24 @@
   <!-- Área do jogo -->
   <main class="game-board" id="game-board" hidden role="region" aria-label="Área do jogo">
     <div class="score-container">
-      <img id="score-icon" src="/placeholder.svg" alt="Ícone do personagem" style="width: 30px; margin-right: 8px;" />
+      <img id="score-icon" src="/placeholder.svg" alt="Ícone do personagem" style="width: 30px; margin-right: 8px; border-radius: 8px;" />
       <span class="label">Pontos:</span>
-      <span id="score">0</span>
+      <span id="score" style="transition: transform 0.1s ease;">0</span>
     </div>
 
-    <!-- Added high score display -->
     <div class="high-score-container">
-      <span class="label">Recorde:</span>
-      <span id="high-score">0</span>
+      <span class="label">🏆 Recorde:</span>
+      <span id="high-score" style="transition: transform 0.3s ease;">0</span>
     </div>
 
-    <button class="play-audio" onclick="playSound()" aria-label="Tocar/Pausar música" title="Tocar/Pausar música">🎵</button>
+    <button class="play-audio" onclick="playSound()" aria-label="Tocar/Pausar música" title="Tocar/Pausar música" style="transition: all 0.2s ease;">🎵</button>
 
     <img src="./images/clouds.png" alt="Nuvens decorativas" class="clouds" loading="lazy" />
-    <img src="/placeholder.svg" alt="Personagem selecionado" class="mario" />
+    <img src="/placeholder.svg" alt="Personagem selecionado" class="mario" style="transition: transform 0.2s ease;" />
     <img src="./images/pipe.png" alt="Cano do Mario" class="pipe" loading="lazy" />
     <img src="./images/game-over.png" alt="Game Over" class="game-over" hidden />
   
-    <button id="restart-button" hidden class="restart-btn">Jogar novamente</button>
+    <button id="restart-button" hidden class="restart-btn">🔄 Jogar novamente</button>
   </main>
 
   <button class="mobile-jump" id="jump-button" aria-label="Pular" title="Pular">PULAR</button>
