@@ -130,9 +130,11 @@ function jump() {
 
   createJumpEffect()
 
-  const jumpSound = jumpAudio.cloneNode()
-  jumpSound.volume = 0.3
-  jumpSound.play().catch(() => {})
+  if (jumpAudio) {
+    const jumpSound = jumpAudio.cloneNode()
+    jumpSound.volume = 0.3
+    jumpSound.play().catch(() => {})
+  }
 
   setTimeout(() => {
     mario.classList.remove("jump")
@@ -141,6 +143,8 @@ function jump() {
 }
 
 function playSound() {
+  if (!musicAudio) return
+
   const button = document.querySelector(".play-audio")
 
   if (musicAudio.paused) {
@@ -215,9 +219,11 @@ function handleGameOver() {
     updateHighScore()
   }
 
-  gameOverAudio.volume = 0.5
-  gameOverAudio.currentTime = 0
-  gameOverAudio.play().catch(() => {})
+  if (gameOverAudio) {
+    gameOverAudio.volume = 0.5
+    gameOverAudio.currentTime = 0
+    gameOverAudio.play().catch(() => {})
+  }
 
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId)
@@ -230,9 +236,19 @@ function checkCollision() {
 
   const marioWidth = mario.offsetWidth
   const pipeWidth = pipe.offsetWidth
-  const collisionThreshold = 80
 
-  if (pipePosition <= 120 && pipePosition > -pipeWidth && marioPosition < collisionThreshold) {
+  // O personagem precisa estar acima de 90px para passar por cima do cano
+  const pipeHeight = 80 // Altura aproximada do cano
+  const collisionMargin = 10 // Margem de segurança
+
+  // Verifica se o cano está na área do personagem (horizontalmente)
+  const isInHorizontalRange = pipePosition <= 120 && pipePosition > 0
+
+  // Verifica se o personagem está baixo o suficiente para colidir
+  const isLowEnough = marioPosition < pipeHeight + collisionMargin
+
+  // Só há colisão se estiver na área horizontal E baixo demais
+  if (isInHorizontalRange && isLowEnough) {
     return true
   }
 
