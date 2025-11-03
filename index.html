@@ -28,7 +28,6 @@
   <!-- Área do jogo -->
   <main class="game-board" id="game-board" hidden role="region" aria-label="Área do jogo">
     <div class="score-container">
-      <!-- Removido placeholder.svg e usando imagem do personagem diretamente -->
       <img id="score-icon" src="./images/mario.gif" alt="Ícone do personagem" style="width: 30px; margin-right: 8px; border-radius: 8px;" />
       <span class="label">Pontos:</span>
       <span id="score" style="transition: transform 0.1s ease;">0</span>
@@ -42,24 +41,14 @@
     <button class="play-audio" onclick="playSound()" aria-label="Tocar/Pausar música" title="Tocar/Pausar música" style="transition: all 0.2s ease;">🎵</button>
 
     <img src="./images/clouds.png" alt="Nuvens decorativas" class="clouds" loading="lazy" />
-    <!-- Removido placeholder.svg e usando imagem do personagem padrão -->
     <img src="./images/mario.gif" alt="Personagem selecionado" class="mario" style="transition: transform 0.2s ease;" />
-    <img src="./images/pipe.png" alt="Cano do Mario" class="pipe" loading="lazy" />
+    <!-- Removido pipe estático, agora obstáculos são criados dinamicamente -->
     <img src="./images/game-over.png" alt="Game Over" class="game-over" hidden />
   
     <button id="restart-button" hidden class="restart-btn">🔄 Jogar novamente</button>
   </main>
 
   <button class="mobile-jump" id="jump-button" aria-label="Pular" title="Pular">PULAR</button>
-
-  <!-- Áudios tornados opcionais - não causarão erros se não existirem -->
-  <!-- Áudios -->
-  <!-- Remova ou adicione os arquivos de áudio conforme necessário -->
-  <!--
-  <audio id="sound-effect" src="./audio/Its-me-marioo.mp3" preload="auto" loop></audio>
-  <audio id="jump-audio" src="./audio/jump.wav.mp3" preload="auto"></audio>
-  <audio id="gameover-audio" src="./audio/game-over.mp3" preload="auto"></audio>
-  -->
 
 </body>
 </html>
